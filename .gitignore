@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+data/
+test.py
+video2gif.py
+
 # C extensions
 *.so
 
