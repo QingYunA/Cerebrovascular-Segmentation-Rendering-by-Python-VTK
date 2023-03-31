@@ -21,17 +21,26 @@ from metrics import *
 import time
 
 
-def pred_render_init(conf, pred_path, window_index, view_port):
+def single_render_init(conf, window_index, pred_path, view_port, camera):
     mhd_vtk = mhd2vtk(pred_path)
     mc = create_MC(conf, mhd_vtk)
     mapper = create_mapper(conf, mc)
     actor = create_actor(conf, mapper, color=conf.red_color, alpha=1)
-    render = create_render(conf, [actor])
+    renderer = create_render(conf, [actor])
 
-    return render
+    renderer.SetViewport(view_port[window_index])
+
+    if window_index == 0:
+        camera = renderer.GetActiveCamera()
+    else:
+        renderer.SetActiveCamera(camera)
+
+    renderer.ResetCamera()
+
+    return renderer, camera
 
 
-def multi_render_init(conf, window_index, view_port, confusion_matrix):
+def multi_render_init(conf, window_index, view_port, confusion_matrix, camera):
     actors = []
     mc_list = []
     #* create actors
@@ -50,10 +59,17 @@ def multi_render_init(conf, window_index, view_port, confusion_matrix):
 
     renderer.SetViewport(view_port[window_index])
 
-    return renderer, actors, mc_list
+    if window_index == 0:
+        camera = renderer.GetActiveCamera()
+    else:
+        renderer.SetActiveCamera(camera)
+
+    renderer.ResetCamera()
+
+    return renderer, actors, mc_list, camera
 
 
-def colorbar_init(conf, pred_path, gt_path, view_port):
+def color_bar_init(conf, window_index, pred_path, gt_path, view_port, camera):
     pred_vtk = mhd2vtk(pred_path)
     gt_vtk = mhd2vtk(gt_path)
 
@@ -77,7 +93,7 @@ def colorbar_init(conf, pred_path, gt_path, view_port):
     scalar_bar = vtk.vtkScalarBarActor()
     scalar_bar.SetLookupTable(mapper.GetLookupTable())
     scalar_bar.SetTitle('Distance')
-    scalar_bar.SetNumberOfLabels(8)
+    scalar_bar.SetNumberOfLabels(conf.color_bar_labels)
     scalar_bar.UnconstrainedFontSizeOn()
 
     colors = vtk.vtkNamedColors()
@@ -85,7 +101,16 @@ def colorbar_init(conf, pred_path, gt_path, view_port):
     renderer = create_render(conf, [actor])
     renderer.AddActor2D(scalar_bar)
 
-    return renderer
+    renderer.SetViewport(view_port[window_index])
+
+    if window_index == 0:
+        camera = renderer.GetActiveCamera()
+    else:
+        renderer.SetActiveCamera(camera)
+
+    renderer.ResetCamera()
+
+    return renderer, camera
 
 
 def main(conf):
@@ -94,65 +119,34 @@ def main(conf):
 
     start_time = time.time()
     renders = []
-    window_actor_list = []
-    window_mc_list = []
+    camera = vtk.vtkCamera()
 
-    if conf.render_mode == 'pred and gt':
+    if conf.render_mode == 'single':
+        for index, pred_path in tqdm(enumerate(conf.data_path), total=len(conf.data_path), desc='rendering'):
+            render, camera = single_render_init(conf, index, pred_path, view_port, camera)
+            renders.append(render)
+
+    elif conf.render_mode == 'multi':
         for index, (pred_path, gt_path) in tqdm(enumerate(zip(conf.data_path, conf.gt_path)),
                                                 total=len(conf.data_path),
                                                 desc='rendering'):
 
             confusion_matrix = metric_evaluation(pred_path, gt_path)
-            render, actors, mc_list = multi_render_init(conf, index, view_port, confusion_matrix)
-            window_actor_list.append(actors)
-            window_mc_list.append(mc_list)
+            render, actors, mc_list, camera = multi_render_init(conf, index, view_port, confusion_matrix, camera)
             renders.append(render)
 
-    elif conf.render_mode == 'pred':
-        for index, pred_path in tqdm(enumerate(conf.data_path), total=len(conf.data_path), desc='rendering'):
-            render = pred_render_init(conf, pred_path, index, view_port)
-            renders.append(render)
-
-    elif conf.render_mode == 'colorbar':
+    elif conf.render_mode == 'color':
         for index, (pred_path, gt_path) in tqdm(enumerate(zip(conf.data_path, conf.gt_path)),
                                                 total=len(conf.data_path),
                                                 desc='rendering'):
-            render = colorbar_init(conf, pred_path, gt_path, view_port)
+            render, camera = color_bar_init(conf, index, pred_path, gt_path, view_port, camera)
             renders.append(render)
-
-    transform = vtk.vtkTransform()
-    transform_filter = vtk.vtkTransformFilter()
-    transform_filter.SetTransform(transform)
-
-    for w_index, (actors, mc_list) in enumerate(zip(window_actor_list, window_mc_list)):
-        for index, (actor, mc) in enumerate(zip(actors, mc_list)):
-            if w_index == 0 and index == 0:
-                transform_filter.SetInputConnection(mc.GetOutputPort())
-            elif w_index == 0 and index != 0:
-                transform_filter.AddInputConnection(mc.GetOutputPort())
-            else:
-                transform_filter.AddInputConnection(actor.GetMapper().GetInputConnection(0,0))
-
-    cue = vtk.vtkAnimationCue()
-    cue.SetStartTime(0)
-    cue.SetEndTime(360)
-    cue.SetAnimationCueInfo(transform)
-    cue.SetAnimationCall(transform_filter.Update)
-
-    scene = vtk.vtkAnimationScene()
-    scene.AddCue(cue)
-    scene.SetTimeModeToNormalized()
-    scene.SetStartTime(0.0)
-    scene.SetEndTime(1.0)
 
     #* set render window
     render_window = create_render_window(conf, renders)
 
     #* set interactor
     interactor = create_interactor(conf, render_window)
-    interactor.CreateRepeatingTimer(10)
-    interactor.AddObserver('TimerEvent', scene.Play)
-
     #* start render and interactor
     render_window.Render()
 
@@ -164,6 +158,5 @@ if __name__ == '__main__':
     conf_path = './conf.yml'
     conf = Default_Conf()
     conf.update(yaml_read(conf_path))
-    # conf.update
 
     main(conf)

@@ -113,10 +113,18 @@ def create_interactor(conf, render_window):
 
 def get_viewport(conf):
     file_num = len(conf.data_path)
-    column = file_num // 2 if file_num % 2 == 0 else file_num // 2 + 1
-    view_port = []
-    space = 1 / column
-    for i in range(2):
-        for j in range(column):
-            view_port.append([j * space, 0.5 - i * 0.5, (j + 1) * space, 1 - i * 0.5])
-    return view_port
+    if conf.layout == '1*n':
+        column = file_num
+        view_port = []
+        space = 1 / column
+        for i in range(column):
+            view_port.append([i * space, 0, (i + 1) * space, 1])
+        return view_port
+    elif conf.layout == '2*n':
+        column = file_num // 2 if file_num % 2 == 0 else file_num // 2 + 1
+        view_port = []
+        space = 1 / column
+        for i in range(2):
+            for j in range(column):
+                view_port.append([j * space, 0.5 - i * 0.5, (j + 1) * space, 1 - i * 0.5])
+        return view_port

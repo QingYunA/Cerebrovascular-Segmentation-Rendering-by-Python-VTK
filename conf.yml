@@ -1,9 +1,10 @@
 #* BASE
 use_gui: false
-render_mode: 'colorbar' # "pred","pred and gt","colorbar"
+render_mode: 'color' # single：only render pred, multi: render gt and pred, color:render color bar
 data_path: './data/pred'
 gt_path: './data/gt'
 window_size: [800, 800]
+layout: "1*n" # "1*n":means one row n columns, "2*n": means two rows, n columns
 
 #* MARCHING CUBES
 number_of_contours: 1
@@ -13,9 +14,10 @@ iterations: 200
 #* COLOR
 red_color: [0.74, 0.06, 0.06]
 confusion_color: [
-                  [0,255,0],
-                  [0,0,255],
-                  [0.74, 0.06, 0.06],
-                  [0.74, 0.06, 0.06],
+                  [0,255,0], # fp green
+                  [0,0,255], # fn blue
+                  [0.74, 0.06, 0.06], #tp
+                  [0.74, 0.06, 0.06], #tn
                   ]
 background: [1, 1, 1]
+color_bar_labels: 8 #Deciding how many ticks there are on the color bar.
