@@ -1,6 +1,6 @@
 #* BASE
 use_gui: false
-render_mode: 'pred and gt'
+render_mode: 'colorbar' # "pred","pred and gt","colorbar"
 data_path: './data/pred'
 gt_path: './data/gt'
 window_size: [800, 800]
@@ -11,7 +11,7 @@ cube_value: [0, 0.5]
 iterations: 200
 
 #* COLOR
-self_color: []
+red_color: [0.74, 0.06, 0.06]
 confusion_color: [
                   [0,255,0],
                   [0,0,255],

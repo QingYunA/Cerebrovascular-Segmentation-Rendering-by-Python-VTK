@@ -3,9 +3,28 @@ import itk
 from vtk.util import numpy_support
 
 
-def mhd2itk(mhd_path):
+class MyInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
+    def __init__(self, parent=None):
+        self.parent = vtk.vtkRenderWindowInteractor()
+        if parent is not None:
+            self.parent = parent
+
+        self.ResetKey = "r"
+
+    def ResetCamera(self):
+        self.parent.ResetCamera()
+
+    def OnKeyPress(self):
+        key = self.parent.GetKeySym()
+
+        if key == self.ResetKey:
+            self.ResetCamera()
+
+        vtk.vtkInteractorStyleTrackballCamera.OnKeyPress(self)
+
+
+def mhd2vtk(mhd_path):
     data = itk.imread(mhd_path)
-    print(data.shape)
     vtk_data = itk.vtk_image_from_image(data)
     return vtk_data
 
@@ -13,11 +32,7 @@ def mhd2itk(mhd_path):
 def np2itk(np_data):
     data = itk.GetImageFromArray(np_data)
     vtk_data = itk.vtk_image_from_image(data)
-    # vtk_data = numpy_support.numpy_to_vtk(np_data.ravel(), deep=True, array_type=vtk.VTK_FLOAT)
     return vtk_data
-
-
-# def create_polydata(conf, vtk_data):
 
 
 def create_MC(conf, mhd_data):
@@ -30,7 +45,7 @@ def create_MC(conf, mhd_data):
     smoothFilter.SetInputConnection(cubes.GetOutputPort())
     smoothFilter.SetNumberOfIterations(conf.iterations)
     smoothFilter.Update()
-    return smoothFilter.GetOutput()
+    return smoothFilter
 
 
 def create_glyph(conf, vtk_data):
@@ -49,20 +64,22 @@ def create_glyph(conf, vtk_data):
 def create_mapper(conf, mc):
     #* 设置mapper
     mapper = vtk.vtkPolyDataMapper()
-    mapper.SetInputData(mc)
-    # mapper.SetInputConnection(append_poly.GetOutputPort())
+    mapper.SetInputData(mc.GetOutput())
     mapper.ScalarVisibilityOff()
 
     return mapper
 
 
-def create_actor(conf, mapper, color, alpha):
-    actor = vtk.vtkActor()
+def create_actor(conf, mapper, color=None, alpha=None):
+    # actor = vtk.vtkActor()
+    actor = vtk.vtkLODActor()
     actor.SetMapper(mapper)
-    # actor.SetPosition(conf.position)
-    actor.GetProperty().SetColor(color)
     actor.GetProperty().SetInterpolationToGouraud()
-    actor.GetProperty().SetOpacity(alpha)
+    if color:
+        actor.GetProperty().SetColor(color)
+
+    if alpha:
+        actor.GetProperty().SetOpacity(alpha)
     return actor
 
 
@@ -78,7 +95,6 @@ def create_render(conf, actors):
 def create_render_window(conf, renderers):
     render_window = vtk.vtkRenderWindow()
     render_window.SetSize(conf.window_size)
-    # render_window.SetBackground(conf.background)
     for renderer in renderers:
         render_window.AddRenderer(renderer)
 
@@ -88,6 +104,8 @@ def create_render_window(conf, renderers):
 def create_interactor(conf, render_window):
     interactor = vtk.vtkRenderWindowInteractor()
     interactor.SetRenderWindow(render_window)
+    my_style = MyInteractorStyle(interactor)
+    interactor.SetInteractorStyle(my_style)
     interactor.Initialize()
 
     return interactor
