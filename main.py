@@ -50,8 +50,8 @@ def multi_render_init(conf, window_index, view_port, confusion_matrix, camera):
         mc_list.append(confusion_MC)
         confusion_mapper = create_mapper(conf, confusion_MC)
         alpha = 1
-        if index == 0 or index == 1:
-            alpha = 0.8
+        if index == 2:
+            alpha = conf.alpha
         actor = create_actor(conf, confusion_mapper, color=color, alpha=alpha)
         actors.append(actor)
 

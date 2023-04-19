@@ -78,7 +78,7 @@ def metric_evaluation(pred_path, gt_path, suffixes="*.mhd"):
     fn_array = np.array(fn_array, dtype=np.int16)
     tp_array = np.array(tp_array, dtype=np.int16)
     tn_array = np.array(tn_array, dtype=np.int16)
-    return [fp_array, fn_array, tp_array, tn_array]
+    return [fp_array, fn_array, tp_array]
 
 
 if __name__ == '__main__':
