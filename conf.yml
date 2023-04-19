@@ -1,8 +1,9 @@
 #* BASE
 use_gui: false
-render_mode: 'color' # single：only render pred, multi: render gt and pred, color:render color bar
-data_path: './data/pred'
+render_mode: 'multi' # single：only render pred, multi: render gt and pred, color:render color bar
+data_path: './data/all_pred'
 gt_path: './data/gt'
+data_index: 1
 window_size: [800, 800]
 layout: "1*n" # "1*n":means one row n columns, "2*n": means two rows, n columns
 

@@ -113,6 +113,8 @@ def create_interactor(conf, render_window):
 
 def get_viewport(conf):
     file_num = len(conf.data_path)
+    if file_num==0:
+        raise ValueError('No data to show! Check your data path.')
     if conf.layout == '1*n':
         column = file_num
         view_port = []
