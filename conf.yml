@@ -1,6 +1,6 @@
 #* BASE
 use_gui: false
-render_mode: 'single' # single ：only render pred, multi: render gt and pred, color:render color bar
+render_mode: 'multi' # single ：only render pred, multi: render gt and pred, color:render color bar
 data_path: './data/all_pred'
 gt_path: './data/gt'
 data_index: 1

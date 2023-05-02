@@ -1,6 +1,5 @@
 import vtk
 import itk
-from vtk.util import numpy_support
 
 
 class MyInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
