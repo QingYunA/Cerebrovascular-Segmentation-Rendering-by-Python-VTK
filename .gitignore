@@ -6,6 +6,8 @@ __pycache__/
 data/
 test.py
 video2gif.py
+*.png
+*.md
 
 # C extensions
 *.so

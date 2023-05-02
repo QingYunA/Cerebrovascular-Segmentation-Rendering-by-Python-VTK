@@ -74,10 +74,10 @@ def metric_evaluation(pred_path, gt_path, suffixes="*.mhd"):
 
     tn_array = np.ones(gdth.shape) - union
 
-    fp_array = np.array(fp_array, dtype=np.int16)
-    fn_array = np.array(fn_array, dtype=np.int16)
-    tp_array = np.array(tp_array, dtype=np.int16)
-    tn_array = np.array(tn_array, dtype=np.int16)
+    fp_array = np.array(fp_array, dtype=np.int8)
+    fn_array = np.array(fn_array, dtype=np.int8)
+    tp_array = np.array(tp_array, dtype=np.int8)
+    tn_array = np.array(tn_array, dtype=np.int8)
     return [fp_array, fn_array, tp_array]
 
 

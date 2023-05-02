@@ -158,5 +158,12 @@ if __name__ == '__main__':
     conf_path = './conf.yml'
     conf = Default_Conf()
     conf.update(yaml_read(conf_path))
-
+    # from pycallgraph import PyCallGraph
+    # from pycallgraph.output import GraphvizOutput
+    # from pycallgraph import Config
+    # from pycallgraph import GlobbingFilter
+    # config = Config()
+    # config.trace_filter = GlobbingFilter(include=['create*', 'get*', '*itk*', '*vtk*', 'main','MyInteractorStyle.','metric*','*subject'])
+    # graphviz = GraphvizOutput(output_file='main.png')
+    # with PyCallGraph(output=graphviz, config=config):
     main(conf)
