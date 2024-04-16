@@ -10,7 +10,7 @@ python main.py
 你会在终端中看到渲染进度条。
 渲染完成后，结果会自动保存为 `.obj` 和 `.png` 格式。如果不想保存，请在 `conf.yml` 中更改 `save_png` 和 `save_obj` 。
 
-## Catalog
+## 未来计划
 
 * [x] 多窗口可视化
 * [x] FN，TN，FP，TP等指标单独着色渲染
@@ -19,7 +19,7 @@ python main.py
 * [ ] 目前没考虑渲染速度问题
 * [ ] PyQT+VTK渲染，可以实现交互式渲染
 
-## How to Change Config
+## 如何修改config
 
 在 `conf.yml` 可以配置大多数的设置，较为重要的设置如下
 
