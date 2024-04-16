@@ -1,11 +1,17 @@
 #* BASE
 use_gui: false
-render_mode: 'multi' # single ：only render pred, multi: render gt and pred, color:render color bar
-data_path: './data/all_pred'
-gt_path: './data/gt'
+render_mode: 'single' # single ：only render pred, multi: render gt and pred, color:render color bar
+data_path: './test_data/'
+gt_path: './test_data/gt'
 data_index: 1
 window_size: [800, 800]
 layout: "1*n" # "1*n":means one row n columns, "2*n": means two rows, n columns
+#* SAVE
+save_png: true
+save_obj: true
+save_path: "./"
+save_name_obj: "tmp.obj"
+save_name_png: "tmp.png"
 
 #* MARCHING CUBES
 number_of_contours: 1

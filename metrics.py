@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-'''
+"""
 @File    :   metrics.py
 @Time    :   2023/03/01 18:19:56
 @Author  :   Serein
@@ -8,7 +8,8 @@
 @Contact :   serein7z@163.com
 @License :   (C)Copyright 2022-2023, USTB_MedicalAI
 @Desc    :   {get metrics from predict file}
-'''
+"""
+
 from pathlib import Path
 import numpy as np
 import copy
@@ -16,22 +17,6 @@ from tqdm import tqdm
 import SimpleITK as sitk
 from utils import yaml_read
 from utils.conf_base import Default_Conf
-
-
-def make_subject(image_paths, label_paths, suffixes):
-    images_dir = Path(image_paths)
-    labels_dir = Path(label_paths)
-
-    image_paths = sorted(images_dir.glob(suffixes))
-    label_paths = sorted(labels_dir.glob(suffixes))
-    subjects = []
-    for (image_path, label_path) in zip(image_paths, label_paths):
-        subject = tio.Subject(
-            pred=tio.ScalarImage(image_path),
-            gt=tio.LabelMap(label_path),
-        )
-        subjects.append(subject)
-    return subjects
 
 
 def load_itk(filename):
@@ -46,7 +31,6 @@ def load_itk(filename):
 
 
 def metric_evaluation(pred_path, gt_path, suffixes="*.mhd"):
-
     # pred_paths = sorted(Path(predict_dir).glob(suffixes))
     # label_paths = sorted(Path(labels_dir).glob(suffixes))
 
@@ -79,10 +63,11 @@ def metric_evaluation(pred_path, gt_path, suffixes="*.mhd"):
     tp_array = np.array(tp_array, dtype=np.int16)
     tn_array = np.array(tn_array, dtype=np.int16)
     return [fp_array, fn_array, tp_array]
+    # return [fn_array, tp_array]
 
 
-if __name__ == '__main__':
-    conf_path = './conf.yml'
+if __name__ == "__main__":
+    conf_path = "./conf.yml"
     conf = Default_Conf()
     conf.update(yaml_read(conf_path))
     metric_evaluation(conf.data_path, conf.gt_path)

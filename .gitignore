@@ -7,7 +7,12 @@ data/
 test.py
 video2gif.py
 *.png
-*.md
+midas_data
+pc_data
+test_data
+ixi_data
+*.vtk
+*.obj
 
 # C extensions
 *.so
